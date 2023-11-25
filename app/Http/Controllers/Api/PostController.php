@@ -26,15 +26,26 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'author' => 'required|max:255',
-            'category' => 'required|max:255',
+        $request->validate([
+            'author' => 'required',
+            'category' => 'required',
             'content' => 'required',
-            // 'image' => 'nullable|image|max:10240', // Se você estiver aceitando uploads de imagem
+            'image' => 'image|mimes: png,jpg|max:2048',
         ]);
-
-        $post = Post::create($validatedData);
-
+    
+        $post = new Post;
+        $post->author = $request->author;
+        $post->category = $request->category;
+        $post->content = $request->content;
+    
+        if ($request->hasFile('image')) {
+            $imageName = time().'.'.$request->image->extension();  
+            $request->image->move(public_path('images'), $imageName);
+            $post->image = $imageName;
+        }
+    
+        $post->save();
+    
         return response()->json($post, 201);
     }
 

@@ -1,47 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { PostList } from './components/PostList';
-import { PostCreator } from './components/PostCreator';
-import { Header } from './components/Header';
-// ... importe outros componentes conforme necessário
+import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
+import { PostList } from "./components/PostList";
+import { PostCreator } from "./components/PostCreator";
+import { Header } from "./components/Header";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Signup from "./components/Signup";
+import Login from "./components/login";
+
+
 
 const App = () => {
-  const [posts, setPosts] = useState([]);
+    const [isSignedUp, setIsSignedUp] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // A URL deve ser a rota da API que retorna os posts.
-    // Ajuste a URL se você estiver usando um prefixo diferente ou se o Laravel estiver hospedado em um domínio diferente.
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch('/api/posts');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+    const checkLoginStatus = () => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            setIsLoggedIn(true);
         }
-        const data = await response.json();
-        setPosts(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Could not fetch posts: ", error);
-      }
     };
 
-    fetchPosts();
-  }, []);
+    useEffect(() => {
+      checkLoginStatus()
+        if (true) {
+            const fetchPosts = async () => {
+                try {
+                    const response = await fetch("/api/posts");
+                    if (!response.ok) {
+                        throw new Error(
+                            `HTTP error! status: ${response.status}`
+                        );
+                    }
+                    const data = await response.json();
+                    setPosts(data);
+                } catch (error) {
+                    console.error("Could not fetch posts: ", error);
+                }
+            };
 
-  const handlePostSubmit = () => {
-    // Lógica para abrir formulário de criação de posts ou criar um novo post
-  };
+            fetchPosts();
+            setLoading(false)
+        }
+    }, [isLoggedIn]);
 
-  return (
-    <div>
-      <Header />
-      <PostCreator onPostSubmit={handlePostSubmit} />
-      <PostList posts={posts} />
-      {/* ...outros componentes conforme necessário */}
-    </div>
-  );
+    const handleSignupSuccess = () => {
+        setIsSignedUp(true);
+    };
+
+    const handleLoginSuccess = () => {
+        setIsLoggedIn(true);
+    };
+
+    const handlePostSubmit = (newPost) => {
+        setPosts([...posts, newPost]);
+    };
+    if(loading) {
+      return <p>Carregando...</p>
+    }
+
+    return (
+        <div className="container card">
+            {!isLoggedIn ? (
+                !isSignedUp ? (
+                    <Signup onSignupSuccess={handleSignupSuccess} />
+                ) : (
+                  <Login onLoginSuccess={handleLoginSuccess} />
+                )
+            ) : (
+                <>
+                    <Header />
+                    <PostCreator onPostSubmit={handlePostSubmit} />
+                    <PostList posts={posts} />
+                </>
+             )}
+        </div>
+    );
 };
 
-if (document.getElementById('app')) {
-  ReactDOM.render(<App />, document.getElementById('app'));
+if (document.getElementById("app")) {
+    ReactDOM.render(<App />, document.getElementById("app"));
 }
