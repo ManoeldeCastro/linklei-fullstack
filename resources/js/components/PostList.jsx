@@ -1,9 +1,14 @@
-import Post  from "./Post";
+import Post from "./Post";
 
-export const PostList = ({ posts }) => (
-  <div>
-    {posts.map(post => (
-      <Post key={post.id} post={post}  />
-    ))}
-  </div>
+export const PostList = ({ posts, onDelete, onEdit }) => (
+    <div>
+        {posts.map((post) => (
+            <Post
+                key={post.id}
+                post={post}
+                onDelete={onDelete}
+                onEdit={onEdit}
+            />
+        ))}
+    </div>
 );

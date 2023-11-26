@@ -15,12 +15,19 @@ const App = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const deletePost = (postId) => {
+        setPosts(currentPosts => currentPosts.filter(post => post.id !== postId));
+      };
+
     const checkLoginStatus = () => {
         const user = localStorage.getItem("user");
         if (user) {
             setIsLoggedIn(true);
         }
     };
+    const onEdit = (postToEdit) => {
+        console.log(postToEdit)
+      };
 
     useEffect(() => {
       checkLoginStatus()
@@ -72,7 +79,7 @@ const App = () => {
                 <>
                     <Header />
                     <PostCreator onPostSubmit={handlePostSubmit} />
-                    <PostList posts={posts} />
+                    <PostList posts={posts} onDelete={deletePost} onEdit={onEdit}/>
                 </>
              )}
         </div>

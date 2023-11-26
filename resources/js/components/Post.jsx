@@ -4,7 +4,29 @@ import avatarPath from '../../../public/assets/avatar_default.png';
 import optionsIconPath from '../../../public/assets/dotdotdot.svg';
 import categoryPath from '../../../public/assets/feed.svg';
 
-const Post = ({ post }) => {
+const Post = ({ post, onDelete, onEdit }) => {
+  const handleDelete = async () => {
+    if (window.confirm("Tem certeza de que deseja excluir este post?")) {
+      try {
+        const response = await fetch(`/api/posts/${post.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        onDelete(post.id);
+      } catch (error) {
+        console.error("Erro ao excluir post: ", error);
+      }
+    }
+  };
+
+
   return (
     <Card className="mb-3">
       <Card.Header as="h5" className="d-flex justify-content-between align-items-center">
@@ -20,8 +42,8 @@ const Post = ({ post }) => {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-              <Dropdown.Item href="#/action-1">Editar</Dropdown.Item>
-              <Dropdown.Item href="#/action-2">Excluir</Dropdown.Item>
+              <Dropdown.Item href="#/action-1" onClick={() => onEdit(post)}>Editar</Dropdown.Item>
+              <Dropdown.Item href="#/action-2" onClick={handleDelete}>Excluir</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </div>

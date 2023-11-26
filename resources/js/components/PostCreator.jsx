@@ -75,9 +75,9 @@ export const PostCreator = ({ onPostSubmit }) => {
                                 <option value={category}>
                                     Selecione uma opção
                                 </option>
-                                <option value="post">Post</option>
-                                <option value="artigo">Artigo</option>
-                                <option value="grupo">Grupo</option>
+                                <option value="Post">Post</option>
+                                <option value="Artigo">Artigo</option>
+                                <option value="Grupo">Grupo</option>
                             </Form.Select>
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="postContent">
