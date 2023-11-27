@@ -16,7 +16,6 @@ export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
             setAuthor(editingPost.author);
             setCategory(editingPost.category);
             setContent(editingPost.content);
-            // Não definir selectedImage porque é um arquivo, não uma string
         }
     }, [editingPost]);
 
@@ -53,8 +52,6 @@ export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
                 body: formData,
                 headers: {
                     Accept: "application/json",
-                    // Não defina 'Content-Type' quando usar FormData
-                    // Se estiver usando autenticação, adicione o token aqui
                 },
             });
             if (!response.ok) {
