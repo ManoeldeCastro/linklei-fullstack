@@ -14,6 +14,7 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [editingPost, setEditingPost] = useState(null);
 
     const deletePost = (postId) => {
         setPosts(currentPosts => currentPosts.filter(post => post.id !== postId));
@@ -26,8 +27,9 @@ const App = () => {
         }
     };
     const onEdit = (postToEdit) => {
-        console.log(postToEdit)
-      };
+        setEditingPost(postToEdit);
+    };
+    
 
     useEffect(() => {
       checkLoginStatus()
@@ -51,6 +53,9 @@ const App = () => {
             setLoading(false)
         }
     }, [isLoggedIn]);
+    const handleCloseModal = () => {
+        setEditingPost(null);
+    };
 
     const handleSignupSuccess = () => {
         setIsSignedUp(true);
@@ -60,9 +65,19 @@ const App = () => {
         setIsLoggedIn(true);
     };
 
-    const handlePostSubmit = (newPost) => {
-        setPosts([...posts, newPost]);
+    const handlePostSubmit = (newOrUpdatedPost, action) => {
+        if (action === 'edit') {
+            setPosts(currentPosts =>
+                currentPosts.map(post => 
+                    post.id === newOrUpdatedPost.id ? newOrUpdatedPost : post
+                )
+            );
+        } else {
+            setPosts(currentPosts => [...currentPosts, newOrUpdatedPost]);
+        }
+        setEditingPost(null); // Reseta o post em edição
     };
+    
     if(loading) {
       return <p>Carregando...</p>
     }
@@ -78,7 +93,7 @@ const App = () => {
             ) : (
                 <>
                     <Header />
-                    <PostCreator onPostSubmit={handlePostSubmit} />
+                    <PostCreator onPostSubmit={handlePostSubmit} editingPost={editingPost} onClose={handleCloseModal} />
                     <PostList posts={posts} onDelete={deletePost} onEdit={onEdit}/>
                 </>
              )}

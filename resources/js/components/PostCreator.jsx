@@ -1,21 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
-export const PostCreator = ({ onPostSubmit }) => {
+export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
     const [showModal, setShowModal] = useState(false);
-    const [author, setAuthor] = useState(
-        JSON.parse(localStorage.getItem("user")).name
-    );
+    // Inicializa o state com dados vazios ou dados do post a ser editado
+    const [author, setAuthor] = useState("");
     const [category, setCategory] = useState("");
     const [content, setContent] = useState("");
-    const [selectedImage, setSelectedImage] = useState("");
+    const [selectedImage, setSelectedImage] = useState(null);
 
-    const handleClose = () => setShowModal(false);
+    // Efeito para preencher o formulário quando um post é passado para edição
+    useEffect(() => {
+        if (editingPost) {
+            setShowModal(true);
+            setAuthor(editingPost.author);
+            setCategory(editingPost.category);
+            setContent(editingPost.content);
+            // Não definir selectedImage porque é um arquivo, não uma string
+        }
+    }, [editingPost]);
+
+    const handleClose = () => {
+        setShowModal(false);
+        if(onClose) {
+            onClose();  // Reseta o post em edição quando o modal é fechado
+        }
+    };
+
     const handleShow = () => setShowModal(true);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+    
         const formData = new FormData();
         formData.append("author", author);
         formData.append("category", category);
@@ -23,31 +39,49 @@ export const PostCreator = ({ onPostSubmit }) => {
         if (selectedImage) {
             formData.append("image", selectedImage);
         }
+        if (editingPost) {
+            formData.append('_method', 'PATCH');
+        }
+    
+        // Decide se deve criar um novo post ou atualizar um existente
+        const method = editingPost ? "PATCH" : "POST";
+        const url = editingPost ? `/api/posts/${editingPost.id}` : "/api/posts";
+    
         try {
-            const response = await fetch("/api/posts", {
-                method: "POST",
+            const response = await fetch(url, {
+                method: method === 'PATCH' ? 'POST' : method, // Usamos POST aqui porque o FormData não suporta PATCH diretamente
                 body: formData,
                 headers: {
                     Accept: "application/json",
+                    // Não defina 'Content-Type' quando usar FormData
+                    // Se estiver usando autenticação, adicione o token aqui
                 },
             });
             if (!response.ok) {
-                throw new Error(
-                    `Erro ao submeter post: ${response.statusText}`
-                );
+                throw new Error(`Erro ao submeter post: ${response.statusText}`);
             }
             const result = await response.json();
-            onPostSubmit(result);
+            onPostSubmit(result, editingPost ? 'edit' : 'create'); // Informa se é edição ou criação
             handleClose();
         } catch (error) {
             console.error(error);
         }
     };
+    
+
+    // Botão para abrir o modal em modo de criação
+    const openModalForCreate = () => {
+        setAuthor(JSON.parse(localStorage.getItem("user")).name);
+        setCategory("");
+        setContent("");
+        setSelectedImage(null);
+        handleShow();
+    };
 
     return (
         <>
             <div className="d-flex justify-content-center my-2">
-                <Button variant="primary" className="w-25" onClick={handleShow}>
+                <Button variant="primary" className="w-25" onClick={openModalForCreate}>
                     Criar post
                 </Button>
             </div>

@@ -30,7 +30,7 @@ class PostController extends Controller
             'author' => 'required',
             'category' => 'required',
             'content' => 'required',
-            'image' => 'image|mimes: png,jpg|max:2048',
+            'image' => 'image|mimes:png,jpg|max:2048',
         ]);
     
         $post = new Post;
@@ -71,25 +71,29 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $post = Post::findOrFail($id);
-
+    
         $validatedData = $request->validate([
             'author' => 'required|max:255',
             'category' => 'required|max:255',
             'content' => 'required',
-            // 'image' => 'nullable|image|max:10240', // Se você estiver aceitando uploads de imagem
+            'image' => 'nullable|image|mimes:png,jpg|max:2048', // 'nullable' permite que a imagem seja opcional
         ]);
-
-        $post->update($validatedData);
-
+    
+        // Atualizar campos do post manualmente
+        $post->author = $validatedData['author'];
+        $post->category = $validatedData['category'];
+        $post->content = $validatedData['content'];
+    
+        if ($request->hasFile('image')) {
+            $imageName = time().'.'.$request->image->extension();
+            $request->image->move(public_path('images'), $imageName);
+            $post->image = $imageName;
+        }
+    
+        $post->save();
+    
         return response()->json($post);
     }
-
-    /**
-     * Remover o recurso especificado do armazenamento.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $post = Post::findOrFail($id);
