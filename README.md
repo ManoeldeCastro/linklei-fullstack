@@ -1,6 +1,6 @@
 # Linklei
 
-Descrição breve do projeto, explicando o que ele faz e qual problema ele resolve.
+Breve descrição do projeto, explicando o que ele faz e qual problema ele resolve.
 
 ## Tecnologias Utilizadas
 
@@ -8,7 +8,7 @@ Descrição breve do projeto, explicando o que ele faz e qual problema ele resol
 - **React**: Utilizado para criar a interface do usuário interativa no front-end.
 - **MySQL**: Banco de dados relacional para armazenamento de dados.
 - **Bootstrap**: Framework CSS para estilização e componentes responsivos.
-- **Docker** (opcional): Para contêineres de ambiente de desenvolvimento isolados.
+- **Docker**: Utilizado para criar um ambiente de desenvolvimento isolado e consistente.
 
 ## Recursos
 
@@ -18,38 +18,29 @@ Descrição breve do projeto, explicando o que ele faz e qual problema ele resol
 - Validação de dados: No lado do servidor para garantir a integridade dos dados.
 - Front-end responsivo: Adaptável a diferentes tamanhos de tela.
 - Editor de Texto Rico: Permite aos usuários inserir e formatar o conteúdo dos posts.
+- Rolagem Infinita: Carrega mais posts automaticamente à medida que o usuário rola a página.
 
-## Instalação Local
+## Instalação com Docker
 
-Para executar este projeto localmente, siga estes passos:
+Para executar este projeto usando Docker, siga estes passos:
 
-1. Clone o repositório
+1. Clone o repositório.
+2. Navegue até o diretório do projeto.
+3. Copie o arquivo `.env.example` para `.env` e configure suas variáveis de ambiente.
+4. Execute `docker-compose up -d` para iniciar os contêineres em background.
+5. Acesse o contêiner do app com `docker-compose exec app bash`.
+6. Dentro do contêiner, execute `php artisan key:generate`.
+7. Execute `php artisan migrate` para criar as tabelas do banco de dados.
+8. Acesse a aplicação em `http://localhost:8000`.
 
-2. Navegue até o diretório do projeto:
-cd seu-repositorio
+## Uso sem Docker
 
-3. Instale as dependências do Composer:
-composer install
+Se preferir executar o projeto sem Docker:
 
-4. Instale as dependências do NPM:
-npm install
-
-5. Compile os assets
-npm run dev
-
-6. Crie um arquivo `.env` com base no `.env.example` e configure suas variáveis de ambiente, incluindo as credenciais do banco de dados.
-
-7. Gere uma chave de aplicativo Laravel:
-php artisan key:generate
-
-8. Execute as migrações para criar as tabelas do banco de dados:
-php artisan migrate
-
-9. Inicie o servidor de desenvolvimento do Laravel:
- ```
- php artisan serve
- ```
-10. Acesse a aplicação em `http://localhost:8000`.
+1. Siga os passos de 1 a 6 acima, excluindo os relacionados ao Docker.
+2. Instale as dependências do Composer com `composer install`.
+3. Instale as dependências do NPM com `npm install` e compile os assets com `npm run dev`.
+4. Inicie o servidor de desenvolvimento do Laravel com `php artisan serve`.
 
 ## Contribuições
 

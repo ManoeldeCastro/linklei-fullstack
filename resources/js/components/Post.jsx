@@ -1,10 +1,12 @@
-import React from 'react';
+import { useState } from 'react';
 import { Card, Button, Dropdown } from 'react-bootstrap';
 import avatarPath from '../../../public/assets/avatar_default.png';
 import optionsIconPath from '../../../public/assets/dotdotdot.svg';
 import categoryPath from '../../../public/assets/feed.svg';
 
 const Post = ({ post, onDelete, onEdit }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const handleDelete = async () => {
     if (window.confirm("Tem certeza de que deseja excluir este post?")) {
       try {
@@ -25,6 +27,14 @@ const Post = ({ post, onDelete, onEdit }) => {
       }
     }
   };
+
+  const toggleContent = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const content = post.content;
+  const shouldShorten = content.length > 255 && !isExpanded;
+  
 
 
   return (
@@ -56,7 +66,18 @@ const Post = ({ post, onDelete, onEdit }) => {
         {post.image && (
           <Card.Img variant="top" src={`/images/${post.image}`} alt="Imagem do Post" />
         )}
-        <Card.Text className="mt-2"  dangerouslySetInnerHTML={{ __html: post.content }} />
+        <Card.Text className="mt-2">
+          {shouldShorten ? (
+            <>
+              <span dangerouslySetInnerHTML={{ __html: content.substring(0, 255) + '...' }}></span>
+              <Button variant="link" onClick={() => setIsExpanded(true)}>
+                Leia mais..
+              </Button>
+            </>
+          ) : (
+            <span dangerouslySetInnerHTML={{ __html: content }}></span>
+          )}
+        </Card.Text>
       </Card.Body>
     </Card>
   );

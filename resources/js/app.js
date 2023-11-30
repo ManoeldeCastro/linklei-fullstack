@@ -136,6 +136,11 @@ const App = () => {
                     <Header onLogout={handleLogout}/>
                     <PostCreator onPostSubmit={handlePostSubmit} editingPost={editingPost} onClose={handleCloseModal} />
                     <PostList posts={posts} onDelete={deletePost} onEdit={onEdit}/>
+                    {!hasMore && (
+                        <div className="text-center mt-4">
+                            <p>Não existem mais posts a serem exibidos.</p>
+                        </div>
+                    )}
                 </>
              )}
         </div>
