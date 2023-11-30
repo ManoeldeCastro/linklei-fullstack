@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
     const [showModal, setShowModal] = useState(false);
@@ -21,8 +23,8 @@ export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
 
     const handleClose = () => {
         setShowModal(false);
-        if(onClose) {
-            onClose();  // Reseta o post em edição quando o modal é fechado
+        if (onClose) {
+            onClose(); // Reseta o post em edição quando o modal é fechado
         }
     };
 
@@ -30,7 +32,7 @@ export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-    
+
         const formData = new FormData();
         formData.append("author", author);
         formData.append("category", category);
@@ -39,32 +41,33 @@ export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
             formData.append("image", selectedImage);
         }
         if (editingPost) {
-            formData.append('_method', 'PATCH');
+            formData.append("_method", "PATCH");
         }
-    
+
         // Decide se deve criar um novo post ou atualizar um existente
         const method = editingPost ? "PATCH" : "POST";
         const url = editingPost ? `/api/posts/${editingPost.id}` : "/api/posts";
-    
+
         try {
             const response = await fetch(url, {
-                method: method === 'PATCH' ? 'POST' : method, // Usamos POST aqui porque o FormData não suporta PATCH diretamente
+                method: method === "PATCH" ? "POST" : method, // Usamos POST aqui porque o FormData não suporta PATCH diretamente
                 body: formData,
                 headers: {
                     Accept: "application/json",
                 },
             });
             if (!response.ok) {
-                throw new Error(`Erro ao submeter post: ${response.statusText}`);
+                throw new Error(
+                    `Erro ao submeter post: ${response.statusText}`
+                );
             }
             const result = await response.json();
-            onPostSubmit(result, editingPost ? 'edit' : 'create'); // Informa se é edição ou criação
+            onPostSubmit(result, editingPost ? "edit" : "create"); // Informa se é edição ou criação
             handleClose();
         } catch (error) {
             console.error(error);
         }
     };
-    
 
     // Botão para abrir o modal em modo de criação
     const openModalForCreate = () => {
@@ -78,14 +81,20 @@ export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
     return (
         <>
             <div className="d-flex justify-content-center my-2">
-                <Button variant="primary" className="w-25" onClick={openModalForCreate}>
+                <Button
+                    variant="primary"
+                    className="w-25"
+                    onClick={openModalForCreate}
+                >
                     Criar post
                 </Button>
             </div>
 
             <Modal show={showModal} onHide={handleClose} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Criar post</Modal.Title>
+                    <Modal.Title>
+                        {editingPost ? "Editar post" : "Criar post"}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
@@ -102,10 +111,8 @@ export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
                             <Form.Label>Selecione a categoria</Form.Label>
                             <Form.Select
                                 onChange={(e) => setCategory(e.target.value)}
+                                required
                             >
-                                <option value={category}>
-                                    Selecione uma opção
-                                </option>
                                 <option value="Post">Post</option>
                                 <option value="Artigo">Artigo</option>
                                 <option value="Grupo">Grupo</option>
@@ -113,12 +120,7 @@ export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="postContent">
                             <Form.Label>Escrever publicação</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                value={content}
-                                rows={3}
-                                onChange={(e) => setContent(e.target.value)}
-                            />
+                            <ReactQuill value={content} onChange={setContent} />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="postImage">
                             <Form.Label>Imagem</Form.Label>

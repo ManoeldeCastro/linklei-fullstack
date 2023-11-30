@@ -13,10 +13,11 @@ Descrição breve do projeto, explicando o que ele faz e qual problema ele resol
 ## Recursos
 
 - CRUD de posts: Criação, leitura, atualização e exclusão de posts.
-- Upload de imagens: Integração para adicionar imagens aos posts.
+- Upload de imagens: Integração para adicionar imagens aos posts e exibir imagens inseridas no conteúdo.
 - Autenticação de usuários: Login e registro de usuários no local storage.
 - Validação de dados: No lado do servidor para garantir a integridade dos dados.
 - Front-end responsivo: Adaptável a diferentes tamanhos de tela.
+- Editor de Texto Rico: Permite aos usuários inserir e formatar o conteúdo dos posts.
 
 ## Instalação Local
 

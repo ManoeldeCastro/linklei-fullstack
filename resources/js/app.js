@@ -29,6 +29,11 @@ const App = () => {
     const onEdit = (postToEdit) => {
         setEditingPost(postToEdit);
     };
+
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        localStorage.removeItem("user"); // Remove o usuário do localStorage
+      };
     
 
     useEffect(() => {
@@ -92,7 +97,7 @@ const App = () => {
                 )
             ) : (
                 <>
-                    <Header />
+                    <Header onLogout={handleLogout}/>
                     <PostCreator onPostSubmit={handlePostSubmit} editingPost={editingPost} onClose={handleCloseModal} />
                     <PostList posts={posts} onDelete={deletePost} onEdit={onEdit}/>
                 </>

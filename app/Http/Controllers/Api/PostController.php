@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Mews\Purifier\Facades\Purifier;
 
 class PostController extends Controller
 {
@@ -36,7 +37,7 @@ class PostController extends Controller
         $post = new Post;
         $post->author = $request->author;
         $post->category = $request->category;
-        $post->content = $request->content;
+        $post->content = Purifier::clean($request->content);
     
         if ($request->hasFile('image')) {
             $imageName = time().'.'.$request->image->extension();  
@@ -76,13 +77,12 @@ class PostController extends Controller
             'author' => 'required|max:255',
             'category' => 'required|max:255',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:png,jpg|max:2048', // 'nullable' permite que a imagem seja opcional
+            'image' => 'nullable|image|mimes:png,jpg|max:2048',
         ]);
     
-        // Atualizar campos do post manualmente
         $post->author = $validatedData['author'];
         $post->category = $validatedData['category'];
-        $post->content = $validatedData['content'];
+        $post->content = Purifier::clean($validatedData['content']);
     
         if ($request->hasFile('image')) {
             $imageName = time().'.'.$request->image->extension();
@@ -94,6 +94,13 @@ class PostController extends Controller
     
         return response()->json($post);
     }
+
+    /**
+     * Remover o recurso especificado do armazenamento.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function destroy($id)
     {
         $post = Post::findOrFail($id);

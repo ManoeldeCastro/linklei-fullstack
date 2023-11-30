@@ -56,9 +56,7 @@ const Post = ({ post, onDelete, onEdit }) => {
         {post.image && (
           <Card.Img variant="top" src={`/images/${post.image}`} alt="Imagem do Post" />
         )}
-        <Card.Text className="mt-2">
-          {post.content}
-        </Card.Text>
+        <Card.Text className="mt-2"  dangerouslySetInnerHTML={{ __html: post.content }} />
       </Card.Body>
     </Card>
   );
