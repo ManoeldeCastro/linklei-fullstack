@@ -14,9 +14,16 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Post::all();
+        // Defina um valor padrão para a quantidade de posts por página
+        $perPage = 5;
+    
+        // Use o método paginate() para buscar posts com paginação
+        $posts = Post::orderBy('created_at', 'desc') // Ordenar por data de criação, mais recentes primeiro
+                     ->paginate($perPage);
+    
+        return response()->json($posts);
     }
 
     /**
@@ -74,8 +81,8 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
     
         $validatedData = $request->validate([
-            'author' => 'required|max:255',
-            'category' => 'required|max:255',
+            'author' => 'required',
+            'category' => 'required',
             'content' => 'required',
             'image' => 'nullable|image|mimes:png,jpg|max:2048',
         ]);

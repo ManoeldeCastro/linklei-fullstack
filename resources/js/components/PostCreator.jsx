@@ -113,6 +113,9 @@ export const PostCreator = ({ onPostSubmit, editingPost, onClose }) => {
                                 onChange={(e) => setCategory(e.target.value)}
                                 required
                             >
+                                <option value={category} disabled selected>
+                                    Selecione uma opção
+                                </option>
                                 <option value="Post">Post</option>
                                 <option value="Artigo">Artigo</option>
                                 <option value="Grupo">Grupo</option>
