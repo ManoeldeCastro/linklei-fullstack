@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import { PostList } from "./components/PostList";
 import { PostCreator } from "./components/PostCreator";
@@ -17,6 +17,7 @@ const App = () => {
     const [editingPost, setEditingPost] = useState(null);
     const [page, setPage] = useState(1);  // Estado para controle de paginação
     const [hasMore, setHasMore] = useState(true);  // Estado para verificar se há mais posts
+    const loadingRef = useRef(false);
 
     const deletePost = (postId) => {
         setPosts(currentPosts => currentPosts.filter(post => post.id !== postId));
@@ -45,35 +46,39 @@ const App = () => {
     }, []); 
 
     const loadMorePosts = async () => {
-        if (hasMore && !loading) {
+        // Use a referência para verificar se já está carregando
+        if (hasMore && !loadingRef.current) {
+            loadingRef.current = true;
             try {
                 const response = await fetch(`/api/posts?page=${page}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
-                setPosts(currentPosts => [...currentPosts, ...data.data]); // Atualizado para usar data.data
-                setPage(page + 1);
-                setHasMore(page < data.last_page); // Verifica se a página atual é menor que a última página
+                setPosts(currentPosts => [...currentPosts, ...data.data]);
+                setPage(prevPage => prevPage + 1);
+                setHasMore(data.current_page < data.last_page);
             } catch (error) {
                 console.error("Could not fetch posts: ", error);
             } finally {
-                setLoading(false);
+                loadingRef.current = false;
             }
         }
     };
 
     useEffect(() => {
-        // Listener de rolagem para carregar mais posts
         const handleScroll = () => {
-            if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
+            // Verifica se o scroll chegou perto do fim da página
+            if (
+                window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 100
+            ) {
                 loadMorePosts();
             }
         };
-
+    
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [loadMorePosts]);
+    }, [page, hasMore]); 
 
     useEffect(() => {
         checkLoginStatus();
@@ -138,7 +143,7 @@ const App = () => {
                     <PostList posts={posts} onDelete={deletePost} onEdit={onEdit}/>
                     {!hasMore && (
                         <div className="text-center mt-4">
-                            <p>Não existem mais posts a serem exibidos.</p>
+                            <p>Não existem mais itens a serem exibidos.</p>
                         </div>
                     )}
                 </>
